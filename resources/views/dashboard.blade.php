@@ -1,100 +1,42 @@
 <x-app-layout>
-
+    <x-slot name="title">Dashboard</x-slot>
     <x-slot name="header">
-        <h1 class="font-semibold text-xl text-gray-800 leading-tight">
-            Dashboard SIPUA
-
-        </h1>
+        <h1 class="text-base font-semibold text-slate-900">Dashboard</h1>
     </x-slot>
 
-    <div class="py-6">
+    <div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
 
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <section>
+            <p class="text-sm text-slate-500">Selamat datang,</p>
+            <h2 class="text-2xl font-semibold tracking-tight text-slate-900">{{ $user->name }}</h2>
+            <p class="mt-1 text-sm text-slate-600">
+                {{ $user->roleLabel() }}@if ($user->unit) · {{ $user->unit->nama_unit }}@endif
+                · Tahun anggaran aktif:
+                <span class="font-medium text-slate-900">{{ $tahunAktif->tahun ?? 'belum ditetapkan' }}</span>
+            </p>
+        </section>
 
-            <!-- GRID CARD -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-                <!-- Tahun Anggaran -->
-                <div class="bg-white shadow-lg rounded-xl p-6 border-l-4 border-blue-500">
-
-                    <div class="flex items-center justify-between">
-
-                        <div>
-
-                            <p class="text-gray-500 text-sm">Tahun Anggaran Aktif</p>
-
-                            <h3 class="text-2xl font-bold text-gray-800">
-
-                                {{ $tahunAktif->tahun ?? '-' }}
-
-                            </h3>
-
+        @if ($stats)
+            <section class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                @foreach ($stats as $stat)
+                    <a href="{{ route($stat['route']) }}"
+                        class="group rounded-xl border border-slate-200 bg-white p-5 transition hover:border-blue-300 hover:shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <p class="text-sm font-medium text-slate-500">{{ $stat['label'] }}</p>
+                            <x-icon :name="$stat['icon']" class="h-5 w-5 text-slate-400 group-hover:text-blue-600" />
                         </div>
-
-                        <div class="text-4xl">
-                            📅
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Jumlah Unit -->
-                <div class="bg-white shadow-lg rounded-xl p-6 border-l-4 border-green-500">
-
-                    <div class="flex items-center justify-between">
-
-                        <div>
-
-                            <p class="text-gray-500 text-sm">Jumlah Unit</p>
-
-                            <h3 class="text-2xl font-bold text-gray-800">
-
-                                {{ $jumlahUnit }}
-
-                            </h3>
-
-                        </div>
-
-                        <div class="text-4xl">
-                            🏢
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Jumlah User -->
-                <div class="bg-white shadow-lg rounded-xl p-6 border-l-4 border-purple-500">
-
-                    <div class="flex items-center justify-between">
-
-                        <div>
-
-                            <p class="text-gray-500 text-sm">Jumlah User</p>
-
-                            <h3 class="text-2xl font-bold text-gray-800">
-
-                                {{ $jumlahUser }}
-
-                            </h3>
-
-                        </div>
-
-                        <div class="text-4xl">
-                            👤
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
+                        <p class="mt-3 text-3xl font-semibold tabular-nums text-slate-900">{{ number_format($stat['value'], 0, ',', '.') }}</p>
+                    </a>
+                @endforeach
+            </section>
+        @else
+            <section class="rounded-xl border border-dashed border-slate-300 bg-white p-6">
+                <h3 class="text-sm font-semibold text-slate-900">Ringkasan usulan belum tersedia</h3>
+                <p class="mt-1 max-w-prose text-sm text-slate-600">
+                    Fitur pengajuan, verifikasi, dan dashboard untuk peran {{ $user->roleLabel() }} sedang dibangun.
+                    Menu akan muncul di sidebar begitu fiturnya siap.
+                </p>
+            </section>
+        @endif
     </div>
-
 </x-app-layout>
