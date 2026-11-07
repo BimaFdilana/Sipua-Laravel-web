@@ -22,7 +22,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::resource('users', UserController::class)->except('show');
         Route::resource('unit', UnitController::class)->except('show');
-        Route::resource('tahun', TahunController::class)->except(['show', 'destroy']);
+        Route::resource('tahun', TahunController::class)->except('show');
+        Route::patch('tahun/{tahun}/aktifkan', [TahunController::class, 'activate'])->name('tahun.activate');
         Route::resource('akun-belanja', AkunBelanjaController::class)->except('show');
         Route::resource('iku', IkuController::class)->except('show');
     });

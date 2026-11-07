@@ -2,88 +2,57 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\AkunBelanjaRequest;
 use App\Models\AkunBelanja;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class AkunBelanjaController extends Controller
 {
-
-    // Menampilkan semua data akun belanja
-    public function index()
+    public function index(Request $request): View
     {
-        $akun = AkunBelanja::orderBy('kode_akun', 'ASC')->get();
+        $akun = AkunBelanja::query()
+            ->when($request->q, fn ($q, $s) => $q->where(fn ($w) => $w
+                ->where('kode_akun', 'like', "%{$s}%")
+                ->orWhere('nama_akun', 'like', "%{$s}%")))
+            ->when($request->jenis, fn ($q, $j) => $q->where('jenis_belanja', $j))
+            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'aktif'))
+            ->orderBy('kode_akun')
+            ->paginate(15)->withQueryString();
+
         return view('akun-belanja.index', compact('akun'));
     }
 
-    // Menampilkan form tambah akun
-    public function create()
+    public function create(): View
     {
-        return view('akun-belanja.create');
+        return view('akun-belanja.form', ['akun' => new AkunBelanja(['is_active' => true, 'jenis_belanja' => 'Barang'])]);
     }
 
-    // Menyimpan data akun baru
-    public function store(Request $request)
+    public function store(AkunBelanjaRequest $request): RedirectResponse
     {
+        $akun = AkunBelanja::create($request->validated());
 
-        $request->validate([
-            'kode_akun' => 'required|unique:akun_belanjas',
-            'nama_akun' => 'required',
-            'jenis_belanja' => 'nullable',
-            'keterangan' => 'required'
-
-        ]);
-
-        AkunBelanja::create([
-            'kode_akun' => $request->kode_akun,
-            'nama_akun' => $request->nama_akun,
-            'jenis_belanja' => $request->jenis_belanja,
-            'keterangan' => $request->keterangan
-        ]);
-
-        return redirect()->route('akun-belanja.index')
-            ->with('success', 'Data akun belanja berhasil ditambahkan');
+        return redirect()->route('akun-belanja.index')->with('success', "Akun {$akun->kode_akun} berhasil ditambahkan.");
     }
 
-    // Menampilkan form edit
-    public function edit($kode_akun)
+    public function edit(AkunBelanja $akunBelanja): View
     {
-
-        $akun = AkunBelanja::findOrFail($kode_akun);
-
-        return view('akun-belanja.edit', compact('akun'));
+        return view('akun-belanja.form', ['akun' => $akunBelanja]);
     }
 
-    // Update data akun
-    public function update(Request $request, $kode_akun)
+    public function update(AkunBelanjaRequest $request, AkunBelanja $akunBelanja): RedirectResponse
     {
+        $akunBelanja->update($request->validated());
 
-        $akun = AkunBelanja::findOrFail($kode_akun);
-
-        $request->validate([
-            'nama_akun' => 'required',
-            'jenis_belanja' => 'nullable',
-            'keterangan' => 'required'
-        ]);
-
-        $akun->update([
-            'nama_akun' => $request->nama_akun,
-            'jenis_belanja' => $request->jenis_belanja,
-            'keterangan' => $request->keterangan
-        ]);
-
-        return redirect()->route('akun-belanja.index')
-            ->with('success', 'Data akun belanja berhasil diperbarui');
+        return redirect()->route('akun-belanja.index')->with('success', "Akun {$akunBelanja->kode_akun} berhasil diperbarui.");
     }
 
-    // Menghapus data akun
-    public function destroy($kode_akun)
+    public function destroy(AkunBelanja $akunBelanja): RedirectResponse
     {
+        // Sprint 2: tolak hapus jika akun sudah dipakai di item RAB.
+        $akunBelanja->delete();
 
-        $akun = AkunBelanja::findOrFail($kode_akun);
-
-        $akun->delete();
-
-        return redirect()->route('akun-belanja.index')
-            ->with('success', 'Data akun belanja berhasil dihapus');
+        return redirect()->route('akun-belanja.index')->with('success', "Akun {$akunBelanja->kode_akun} berhasil dihapus.");
     }
 }

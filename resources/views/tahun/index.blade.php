@@ -1,148 +1,47 @@
 <x-app-layout>
-  <x-slot name="header">
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-      Kelola Tahun Anggaran
-    </h2>
-  </x-slot>
+    <x-slot name="title">Tahun Anggaran</x-slot>
+    <x-slot name="header"><span class="text-sm text-slate-500">Master Data</span></x-slot>
 
-  <div class="py-6">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-4xl space-y-5 px-4 py-6 sm:px-6 lg:px-8">
+        <x-ui.page-header title="Tahun Anggaran"
+            description="Hanya satu tahun yang aktif. Semua usulan baru memakai tahun anggaran aktif.">
+            <x-slot name="actions">
+                <x-ui.button :href="route('tahun.create')">+ Tambah tahun</x-ui.button>
+            </x-slot>
+        </x-ui.page-header>
 
-      <div class="bg-white shadow-md rounded-lg p-6">
+        <x-ui.table empty="Belum ada tahun anggaran.">
+            <x-slot name="head">
+                <th class="px-4 py-3">Tahun</th>
+                <th class="px-4 py-3">Status</th>
+                <th class="px-4 py-3"><span class="sr-only">Aksi</span></th>
+            </x-slot>
 
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-4">
-
-          <div>
-            <h3 class="text-lg font-bold">Manajemen Tahun Anggaran</h3>
-            <p class="text-sm text-gray-500">Kelola tahun anggaran yang digunakan dalam sistem SIPUA</p>
-          </div>
-
-          <a href="{{ route('tahun.create') }}"
-            class="bg-blue-600 hover:bg-blue-700 text-black px-4 py-2 rounded-lg shadow flex items-center gap-2">
-            ➕ Tambah Tahun
-          </a>
-          </a>
-
-        </div>
-
-        <!-- Search -->
-        <div class="mb-4">
-          <input type="text"
-            id="searchTahun"
-            placeholder="Cari tahun..."
-            class="border rounded-lg px-4 py-2 w-full">
-        </div>
-
-
-        <div class="overflow-x-auto">
-          <table class="min-w-full table-auto border border-gray-200 rounded-lg">
-            <table id="tahunTable" class="min-w-full border border-gray-200 rounded-lg overflow-hidden">
-              <thead class="bg-gray-800 text-white">
-                <tr class="text-center">
-                  <th class="px-4 py-2 border">No</th>
-                  <th class="py-3 px-4 border">Tahun</th>
-                  <th class="py-3 px-4 border">Status</th>
-                  <th class="py-3 px-4 border">Aksi</th>
+            @foreach ($tahuns as $t)
+                <tr @class(['bg-blue-50/40' => $t->status, 'hover:bg-slate-50' => ! $t->status])>
+                    <td class="px-4 py-3 text-base font-semibold tabular-nums text-slate-900">{{ $t->tahun }}</td>
+                    <td class="px-4 py-3">
+                        @if ($t->status)
+                            <x-ui.badge color="green"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Aktif</x-ui.badge>
+                        @else
+                            <x-ui.badge>Nonaktif</x-ui.badge>
+                        @endif
+                    </td>
+                    <td class="whitespace-nowrap px-4 py-3 text-right">
+                        @unless ($t->status)
+                            <form method="POST" action="{{ route('tahun.activate', $t) }}" class="mr-1 inline">
+                                @csrf
+                                @method('PATCH')
+                                <x-ui.button type="submit" variant="secondary" size="sm">Jadikan aktif</x-ui.button>
+                            </form>
+                        @endunless
+                        <x-ui.edit-link :href="route('tahun.edit', $t)" :item="'tahun '.$t->tahun" />
+                        @unless ($t->status)
+                            <x-ui.delete-button :action="route('tahun.destroy', $t)" :item="'Tahun anggaran '.$t->tahun" />
+                        @endunless
+                    </td>
                 </tr>
-              </thead>
-
-              <tbody>
-
-                @foreach($tahuns as $tahun)
-
-                <tr class="text-center hover:bg-gray-50">
-
-                  <td class="py-2 border">
-                    {{ $loop->iteration }}
-                  </td>
-
-                  <td class="py-2 border font-medium">
-
-                    <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm">
-                      {{ $tahun->tahun }}
-                    </span>
-
-                  </td>
-
-                  <td class="py-2 border">
-
-                    @if($tahun->status == 1)
-
-                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">
-                      Aktif
-                    </span>
-
-                    @else
-
-                    <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-sm">
-                      Tidak Aktif
-                    </span>
-
-                    @endif
-
-                  </td>
-
-                  <td class="py-2 border">
-
-                    <div class="flex justify-center gap-2">
-
-                      <a href="{{ route('tahun.edit',$tahun->id) }}"
-                        class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm">
-                        ✏️
-                      </a>
-
-                      <form action="{{ route('tahun.destroy',$tahun->id) }}" method="POST">
-
-                        @csrf
-                        @method('DELETE')
-
-                        <button
-                          onclick="return confirm('Yakin hapus tahun ini?')"
-                          class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
-                          🗑
-                        </button>
-
-                      </form>
-
-                    </div>
-
-                  </td>
-
-                </tr>
-
-                @endforeach
-
-              </tbody>
-
-            </table>
-
-        </div>
-
-      </div>
-
+            @endforeach
+        </x-ui.table>
     </div>
-  </div>
-
 </x-app-layout>
-
-<script>
-  document.getElementById("searchTahun").addEventListener("keyup", function() {
-
-    let filter = this.value.toLowerCase();
-    let rows = document.querySelectorAll("#tahunTable tbody tr");
-
-    rows.forEach(function(row) {
-
-      let text = row.textContent.toLowerCase();
-
-      if (text.includes(filter)) {
-        row.style.display = "";
-      } else {
-        row.style.display = "none";
-      }
-
-    });
-
-  });
-</script>

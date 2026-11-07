@@ -35,8 +35,8 @@ class MasterDataSeeder extends Seeder
             ['UPUJ', 'UPA Uji Kompetensi', 'Unit'],
         ];
 
-        foreach ($units as [$kode, $nama, $ket]) {
-            Unit::updateOrCreate(['unit_id' => $kode], ['nama_unit' => $nama, 'keterangan' => $ket]);
+        foreach ($units as [$kode, $nama, $jenis]) {
+            Unit::updateOrCreate(['unit_id' => $kode], ['nama_unit' => $nama, 'jenis' => $jenis]);
         }
 
         Tahun::updateOrCreate(['tahun' => 2026], ['status' => true]);

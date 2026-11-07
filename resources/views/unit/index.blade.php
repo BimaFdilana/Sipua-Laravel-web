@@ -1,129 +1,49 @@
 <x-app-layout>
-  <x-slot name="header">
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-      Kelola Unit / Jurusan
-    </h2>
-  </x-slot>
+    <x-slot name="title">Unit Kerja</x-slot>
+    <x-slot name="header"><span class="text-sm text-slate-500">Master Data</span></x-slot>
 
-  <div class="py-6">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl space-y-5 px-4 py-6 sm:px-6 lg:px-8">
+        <x-ui.page-header title="Unit Kerja" description="Jurusan, bagian, dan unit yang dapat mengajukan usulan anggaran.">
+            <x-slot name="actions">
+                <x-ui.button :href="route('unit.create')">+ Tambah unit</x-ui.button>
+            </x-slot>
+        </x-ui.page-header>
 
-      <div class="bg-white shadow-md rounded-lg p-6">
+        <x-ui.search placeholder="Cari kode atau nama unit…">
+            <x-ui.select name="jenis" :options="array_combine(\App\Models\Unit::JENIS, \App\Models\Unit::JENIS)" :value="request('jenis')" placeholder="Semua jenis" class="sm:w-40" />
+            <x-ui.select name="status" :options="['aktif' => 'Aktif', 'nonaktif' => 'Nonaktif']" :value="request('status')" placeholder="Semua status" class="sm:w-40" />
+        </x-ui.search>
 
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-4">
+        <x-ui.table :paginator="$units" empty="Tidak ada unit kerja yang cocok.">
+            <x-slot name="head">
+                <th class="px-4 py-3">Kode</th>
+                <th class="px-4 py-3">Nama unit</th>
+                <th class="px-4 py-3">Jenis</th>
+                <th class="px-4 py-3 text-right">Pengguna</th>
+                <th class="px-4 py-3">Status</th>
+                <th class="px-4 py-3"><span class="sr-only">Aksi</span></th>
+            </x-slot>
 
-          <div>
-            <h3 class="text-lg font-bold">Manajemen Unit</h3>
-            <p class="text-sm text-gray-500">Kelola data unit kerja atau jurusan</p>
-          </div>
-
-          <a href="{{ route('unit.create') }}"
-            class="bg-blue-600 hover:bg-blue-700 text-black px-4 py-2 rounded-lg shadow flex items-center gap-2">
-            ➕ Tambah Unit
-          </a>
-
-        </div>
-
-        <!-- Search -->
-        <div class="mb-4">
-          <input type="text"
-            id="searchUnit"
-            placeholder="Cari unit..."
-            class="border rounded-lg px-4 py-2 w-full">
-        </div>
-        <div class="overflow-x-auto">
-          <table class="min-w-full table-auto border border-gray-200 rounded-lg">
-            <table id="unitTable" class="min-w-full border border-gray-200 rounded-lg overflow-hidden">
-              <thead class="bg-gray-800 text-white">
-                <tr class="text-center">
-                  <th class="px-4 py-2 border">No</th>
-                  <th class="py-3 px-4 border">Kode Unit</th>
-                  <th class="py-3 px-4 border">Nama Unit</th>
-                  <th class="py-3 px-4 border">Keterangan</th>
-                  <th class="py-3 px-4 border">Aksi</th>
+            @foreach ($units as $unit)
+                <tr class="hover:bg-slate-50">
+                    <td class="whitespace-nowrap px-4 py-3 font-mono text-xs font-semibold text-slate-900">{{ $unit->unit_id }}</td>
+                    <td class="px-4 py-3">
+                        <p class="font-medium text-slate-900">{{ $unit->nama_unit }}</p>
+                        @if ($unit->keterangan)
+                            <p class="text-xs text-slate-500">{{ $unit->keterangan }}</p>
+                        @endif
+                    </td>
+                    <td class="px-4 py-3 text-slate-600">{{ $unit->jenis }}</td>
+                    <td class="px-4 py-3 text-right tabular-nums">{{ $unit->users_count }}</td>
+                    <td class="px-4 py-3">
+                        <x-ui.badge :color="$unit->is_active ? 'green' : 'slate'">{{ $unit->is_active ? 'Aktif' : 'Nonaktif' }}</x-ui.badge>
+                    </td>
+                    <td class="whitespace-nowrap px-4 py-3 text-right">
+                        <x-ui.edit-link :href="route('unit.edit', $unit)" :item="$unit->nama_unit" />
+                        <x-ui.delete-button :action="route('unit.destroy', $unit)" :item="$unit->nama_unit" />
+                    </td>
                 </tr>
-              </thead>
-
-              <tbody>
-
-                @foreach($units as $unit)
-
-                <tr class="text-center hover:bg-gray-50">
-
-                  <td class="px-3 py-2 border">{{ $loop->iteration }}</td>
-
-                  <td class="px-4 py-2 border">
-                    <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm">
-                      {{ $unit->unit_id }}
-                    </span>
-                  </td>
-
-                  <td class="px-6 py-3 border font-medium">
-                    {{ $unit->nama_unit }}
-                  </td>
-
-                  <td class="px-6 py-2 border">
-                    {{ $unit->keterangan ?? '-' }}
-                  </td>
-
-                  <td class="px-6 py-2 border">
-
-                    <div class="flex justify-center gap-2">
-
-                      <a href="{{ route('unit.edit',$unit->id) }}"
-                        class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm">
-                        ✏️
-                      </a>
-
-                      <form action="{{ route('unit.destroy',$unit->id) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-
-                        <button onclick="return confirm('Yakin hapus unit ini?')"
-                          class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
-                          🗑
-                        </button>
-
-                      </form>
-
-                    </div>
-
-                  </td>
-
-                </tr>
-
-                @endforeach
-
-              </tbody>
-
-            </table>
-
-        </div>
-
-      </div>
-
+            @endforeach
+        </x-ui.table>
     </div>
-  </div>
-
 </x-app-layout>
-<script>
-  document.getElementById("searchUnit").addEventListener("keyup", function() {
-
-    let filter = this.value.toLowerCase();
-    let rows = document.querySelectorAll("#unitTable tbody tr");
-
-    rows.forEach(function(row) {
-
-      let text = row.textContent.toLowerCase();
-
-      if (text.includes(filter)) {
-        row.style.display = "";
-      } else {
-        row.style.display = "none";
-      }
-
-    });
-
-  });
-</script>

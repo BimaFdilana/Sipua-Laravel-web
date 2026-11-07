@@ -2,63 +2,60 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TahunRequest;
 use App\Models\Tahun;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class TahunController extends Controller
 {
-    public function index()
+    public function index(): View
     {
-        $tahuns = Tahun::all();
+        $tahuns = Tahun::orderByDesc('tahun')->get();
 
         return view('tahun.index', compact('tahuns'));
     }
 
-    public function create()
+    public function create(): View
     {
-        return view('tahun.create');
+        return view('tahun.form', ['tahun' => new Tahun(['tahun' => (Tahun::max('tahun') ?? now()->year) + 1, 'status' => false])]);
     }
 
-    public function store(Request $request)
+    public function store(TahunRequest $request): RedirectResponse
     {
-        $request->validate([
-            'tahun' => 'required|unique:tahuns',
-        ]);
-        // jika status yang dipilih aktif
-        if ($request->status == 1) {
-            Tahun::where('status', 1)->update(['status' => 0]);
+        $tahun = (new Tahun)->saveExclusive($request->validated());
+
+        return redirect()->route('tahun.index')->with('success', "Tahun anggaran {$tahun->tahun} berhasil ditambahkan.");
+    }
+
+    public function edit(Tahun $tahun): View
+    {
+        return view('tahun.form', compact('tahun'));
+    }
+
+    public function update(TahunRequest $request, Tahun $tahun): RedirectResponse
+    {
+        $tahun->saveExclusive($request->validated());
+
+        return redirect()->route('tahun.index')->with('success', "Tahun anggaran {$tahun->tahun} berhasil diperbarui.");
+    }
+
+    public function activate(Tahun $tahun): RedirectResponse
+    {
+        $tahun->saveExclusive(['status' => true]);
+
+        return back()->with('success', "Tahun anggaran {$tahun->tahun} sekarang aktif.");
+    }
+
+    public function destroy(Tahun $tahun): RedirectResponse
+    {
+        if ($tahun->status) {
+            return back()->with('error', "Tahun {$tahun->tahun} sedang aktif. Aktifkan tahun lain dulu sebelum menghapus.");
         }
 
-        Tahun::create([
-            'tahun' => $request->tahun,
-            'status' => $request->status ?? 0,
-        ]);
+        // Sprint 2: tolak hapus jika tahun sudah memiliki usulan.
+        $tahun->delete();
 
-        return redirect()->route('tahun.index')
-            ->with('success', 'Tahun berhasil ditambahkan');
-    }
-
-    public function edit($id)
-    {
-        $tahun = Tahun::findOrFail($id);
-
-        return view('tahun.edit', compact('tahun'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        $tahun = Tahun::findOrFail($id);
-
-        if ($request->status == 1) {
-            Tahun::where('status', 1)->update(['status' => 0]);
-        }
-
-        $tahun->update([
-            'tahun' => $request->tahun,
-            'status' => $request->status,
-        ]);
-
-        return redirect()->route('tahun.index')
-            ->with('success', 'Tahun berhasil diperbarui');
+        return redirect()->route('tahun.index')->with('success', "Tahun anggaran {$tahun->tahun} berhasil dihapus.");
     }
 }
