@@ -54,6 +54,24 @@ enum StatusUsulan: string
         return in_array($this, [self::Diajukan, self::DiWadir, self::DiSpi, self::DiDirektur], true);
     }
 
+    /** Peran yang sedang memegang usulan pada status ini (null = bukan tahap verifikasi). */
+    public function tahapVerifikasi(): ?string
+    {
+        return match ($this) {
+            self::Diajukan => 'perencanaan',
+            self::DiWadir => 'wadir',
+            self::DiSpi => 'spi',
+            self::DiDirektur => 'direktur',
+            default => null,
+        };
+    }
+
+    /** Status antrean untuk peran verifikator. */
+    public static function antreanUntuk(string $role): ?self
+    {
+        return collect(self::cases())->first(fn (self $s) => $s->tahapVerifikasi() === $role);
+    }
+
     public static function options(): array
     {
         return collect(self::cases())->mapWithKeys(fn (self $s) => [$s->value => $s->label()])->all();

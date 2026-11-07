@@ -37,6 +37,13 @@ class Usulan extends Model
         'uraian_kebutuhan' => 'Uraian kebutuhan',
     ];
 
+    /** Tingkat prioritas (US-20) => warna badge. */
+    public const PRIORITAS = [
+        'Tinggi' => 'red',
+        'Sedang' => 'amber',
+        'Rendah' => 'slate',
+    ];
+
     protected $fillable = [
         'program', 'hasil', 'judul_kegiatan', 'jenis_output', 'volume_output', 'satuan_output',
         'waktu_mulai', 'waktu_selesai',

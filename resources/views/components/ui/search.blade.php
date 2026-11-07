@@ -9,7 +9,7 @@
     </div>
     {{ $slot }}
     <x-ui.button type="submit" variant="secondary">Cari</x-ui.button>
-    @if (collect(request()->except('page'))->filter(fn ($v) => $v !== null && $v !== '')->isNotEmpty())
+    @if (collect(request()->except(['page', 'tab']))->filter(fn ($v) => $v !== null && $v !== '')->isNotEmpty())
         <x-ui.button :href="url()->current()" variant="ghost">Reset</x-ui.button>
     @endif
 </form>

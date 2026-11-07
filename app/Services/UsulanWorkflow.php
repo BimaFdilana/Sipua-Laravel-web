@@ -71,7 +71,61 @@ class UsulanWorkflow
         });
     }
 
-    /** Ubah status sesuai tabel transisi, lalu catat log. Dipakai juga oleh verifikasi (Sprint 3). */
+    /**
+     * Keputusan verifikator (US-17, 18, 22, 24, 25).
+     *
+     * $statusDiharapkan = status saat halaman dibuka; jika berbeda, usulan sudah diproses orang lain.
+     */
+    public function verifikasi(Usulan $usulan, User $user, string $aksi, ?string $catatan, string $statusDiharapkan): Usulan
+    {
+        return DB::transaction(function () use ($usulan, $user, $aksi, $catatan, $statusDiharapkan) {
+            $usulan = Usulan::lockForUpdate()->findOrFail($usulan->id);
+            $tahap = $usulan->status->tahapVerifikasi();
+
+            if ($usulan->status->value !== $statusDiharapkan || $tahap !== $user->role) {
+                throw ValidationException::withMessages([
+                    'keputusan' => 'Usulan ini sudah diproses atau bukan di tahap Anda. Muat ulang halaman.',
+                ]);
+            }
+
+            if (in_array($aksi, ['kembalikan', 'tolak'], true) && blank($catatan)) {
+                throw ValidationException::withMessages([
+                    'catatan' => $aksi === 'kembalikan'
+                        ? 'Tuliskan apa yang harus diperbaiki Pengusul.'
+                        : 'Tuliskan alasan penolakan.',
+                ]);
+            }
+
+            // US-20: prioritas ditetapkan Perencanaan sebelum usulan diteruskan ke Wadir.
+            if ($tahap === User::ROLE_PERENCANAAN && $aksi === 'teruskan' && ! $usulan->prioritas) {
+                throw ValidationException::withMessages(['prioritas' => 'Tetapkan prioritas usulan sebelum meneruskan ke Wadir.']);
+            }
+
+            return $this->pindah($usulan, $user, $tahap, $aksi, $catatan ?: null);
+        });
+    }
+
+    /** US-20: Perencanaan menetapkan tingkat prioritas; tercatat siapa dan kapan. */
+    public function tetapkanPrioritas(Usulan $usulan, User $user, string $prioritas, ?string $catatan = null): Usulan
+    {
+        return DB::transaction(function () use ($usulan, $user, $prioritas, $catatan) {
+            $usulan = Usulan::lockForUpdate()->findOrFail($usulan->id);
+
+            if ($usulan->status !== S::Diajukan) {
+                throw ValidationException::withMessages(['prioritas' => 'Prioritas hanya bisa ditetapkan saat usulan di tahap Perencanaan.']);
+            }
+
+            $usulan->prioritas = $prioritas;
+            $usulan->save();
+
+            $this->log($usulan, $user, User::ROLE_PERENCANAAN, 'prioritas', $usulan->status, $usulan->status,
+                trim("Prioritas {$prioritas}. ".($catatan ?? '')));
+
+            return $usulan;
+        });
+    }
+
+    /** Ubah status sesuai tabel transisi, lalu catat log. */
     public function pindah(Usulan $usulan, User $user, string $tahap, string $aksi, ?string $catatan = null): Usulan
     {
         $dari = $usulan->status;

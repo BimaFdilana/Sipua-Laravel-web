@@ -11,6 +11,7 @@ use App\Http\Controllers\UsulanController;
 use App\Http\Controllers\UsulanDokumenController;
 use App\Http\Controllers\UsulanIkuController;
 use App\Http\Controllers\UsulanRabController;
+use App\Http\Controllers\VerifikasiController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/dashboard');
@@ -46,6 +47,13 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{usulan}/dokumen/{dokumen}', [UsulanDokumenController::class, 'destroy'])->name('dokumen.destroy')->scopeBindings();
         Route::post('/{usulan}/kirim', [UsulanController::class, 'kirim'])->name('kirim');
         Route::delete('/{usulan}', [UsulanController::class, 'destroy'])->name('destroy');
+    });
+
+    // Verifikator: antrean dan keputusan verifikasi (Sprint 3)
+    Route::middleware('role:perencanaan,wadir,spi,direktur')->group(function () {
+        Route::get('/verifikasi', [VerifikasiController::class, 'index'])->name('verifikasi.index');
+        Route::post('/usulan/{usulan}/verifikasi', [VerifikasiController::class, 'proses'])->name('verifikasi.proses');
+        Route::post('/usulan/{usulan}/prioritas', [VerifikasiController::class, 'prioritas'])->name('verifikasi.prioritas');
     });
 
     // Detail usulan & unduh dokumen: Pengusul unitnya dan verifikator (dicek UsulanPolicy)

@@ -7,7 +7,7 @@
     <x-slot name="header"><span class="text-sm text-slate-500">Detail usulan</span></x-slot>
 
     <div class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
-        <x-ui.page-header :title="$usulan->judul_kegiatan" :back="auth()->user()->hasRole('pengusul') ? route('usulan.index') : url()->previous()">
+        <x-ui.page-header :title="$usulan->judul_kegiatan" :back="auth()->user()->hasRole('pengusul') ? route('usulan.index') : route('verifikasi.index')">
             <x-slot name="description">
                 <span class="font-mono">{{ $usulan->nomor }}</span> · {{ $usulan->unit->nama_unit }} · TA {{ $usulan->tahun->tahun }}
             </x-slot>
@@ -36,7 +36,11 @@
             </div>
             <div class="rounded-xl border border-slate-200 bg-white px-4 py-3">
                 <p class="text-xs font-medium text-slate-500">Prioritas</p>
-                <p class="mt-1 text-sm font-medium text-slate-900">{{ $usulan->prioritas ?? 'Belum ditetapkan' }}</p>
+                @if ($usulan->prioritas)
+                    <x-ui.badge :color="\App\Models\Usulan::PRIORITAS[$usulan->prioritas]" class="mt-1.5 text-sm">{{ $usulan->prioritas }}</x-ui.badge>
+                @else
+                    <p class="mt-1 text-sm font-medium text-slate-400">Belum ditetapkan</p>
+                @endif
             </div>
         </section>
 
@@ -113,6 +117,8 @@
             </div>
 
             <div class="space-y-6">
+                <x-usulan.panel-verifikasi :usulan="$usulan" />
+
                 {{-- IKU --}}
                 <x-ui.card title="IKU terkait">
                     @forelse ($usulan->ikus as $iku)
