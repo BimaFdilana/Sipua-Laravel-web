@@ -22,3 +22,10 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Dump / file data database lokal (jangan di-commit, repo publik)
+/Db
+*.sql
+*.sqlite
+*.ibd
+*.frm
