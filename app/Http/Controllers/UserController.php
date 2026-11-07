@@ -66,7 +66,11 @@ class UserController extends Controller
             return back()->with('error', 'Anda tidak bisa menghapus akun Anda sendiri.');
         }
 
-        // Sprint 2: pengguna yang sudah membuat usulan sebaiknya dinonaktifkan, bukan dihapus.
+        if (\App\Models\Usulan::withTrashed()->where('user_id', $user->id)->exists()
+            || \App\Models\UsulanLog::where('user_id', $user->id)->exists()) {
+            return back()->with('error', "{$user->name} sudah tercatat di usulan. Nonaktifkan akunnya, jangan dihapus.");
+        }
+
         $user->delete();
 
         return redirect()->route('users.index')->with('success', "Pengguna {$user->name} berhasil dihapus.");

@@ -53,7 +53,10 @@ class TahunController extends Controller
             return back()->with('error', "Tahun {$tahun->tahun} sedang aktif. Aktifkan tahun lain dulu sebelum menghapus.");
         }
 
-        // Sprint 2: tolak hapus jika tahun sudah memiliki usulan.
+        if (\App\Models\Usulan::withTrashed()->where('tahun_id', $tahun->id)->exists()) {
+            return back()->with('error', "Tahun {$tahun->tahun} sudah memiliki usulan dan tidak bisa dihapus.");
+        }
+
         $tahun->delete();
 
         return redirect()->route('tahun.index')->with('success', "Tahun anggaran {$tahun->tahun} berhasil dihapus.");

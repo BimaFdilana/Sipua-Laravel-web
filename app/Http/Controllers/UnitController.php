@@ -51,6 +51,10 @@ class UnitController extends Controller
 
     public function destroy(Unit $unit): RedirectResponse
     {
+        if (\App\Models\Usulan::withTrashed()->where('unit_id', $unit->id)->exists()) {
+            return back()->with('error', "Unit {$unit->nama_unit} sudah memiliki usulan. Nonaktifkan unit ini, jangan dihapus.");
+        }
+
         if ($jumlah = $unit->users()->count()) {
             return back()->with('error', "Unit {$unit->nama_unit} masih dipakai {$jumlah} pengguna. Nonaktifkan unit ini, jangan dihapus.");
         }

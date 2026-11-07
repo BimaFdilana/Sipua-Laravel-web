@@ -57,7 +57,10 @@ class IkuController extends Controller
 
     public function destroy(Iku $iku): RedirectResponse
     {
-        // Sprint 2: tolak hapus jika IKU sudah dipilih di usulan.
+        if (\Illuminate\Support\Facades\DB::table('iku_usulan')->where('iku_id', $iku->id)->exists()) {
+            return back()->with('error', "{$iku->kode_iku} sudah dipilih di usulan dan tidak bisa dihapus.");
+        }
+
         $iku->delete();
 
         return back()->with('success', "{$iku->kode_iku} berhasil dihapus.");

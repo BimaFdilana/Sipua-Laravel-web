@@ -50,7 +50,10 @@ class AkunBelanjaController extends Controller
 
     public function destroy(AkunBelanja $akunBelanja): RedirectResponse
     {
-        // Sprint 2: tolak hapus jika akun sudah dipakai di item RAB.
+        if (\App\Models\RabItem::where('kode_akun', $akunBelanja->kode_akun)->exists()) {
+            return back()->with('error', "Akun {$akunBelanja->kode_akun} sudah dipakai di RAB usulan. Nonaktifkan akun ini, jangan dihapus.");
+        }
+
         $akunBelanja->delete();
 
         return redirect()->route('akun-belanja.index')->with('success', "Akun {$akunBelanja->kode_akun} berhasil dihapus.");

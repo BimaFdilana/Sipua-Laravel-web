@@ -7,6 +7,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TahunController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UsulanController;
+use App\Http\Controllers\UsulanDokumenController;
+use App\Http\Controllers\UsulanIkuController;
+use App\Http\Controllers\UsulanRabController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/dashboard');
@@ -27,6 +31,27 @@ Route::middleware('auth')->group(function () {
         Route::resource('akun-belanja', AkunBelanjaController::class)->except('show');
         Route::resource('iku', IkuController::class)->except('show');
     });
+
+    // Pengusul: menyusun dan mengirim usulan (Sprint 2)
+    Route::middleware('role:pengusul')->prefix('usulan')->name('usulan.')->group(function () {
+        Route::get('/', [UsulanController::class, 'index'])->name('index');
+        Route::get('/buat', [UsulanController::class, 'create'])->name('create');
+        Route::post('/', [UsulanController::class, 'store'])->name('store');
+        Route::get('/{usulan}/ubah/{step?}', [UsulanController::class, 'edit'])->name('edit');
+        Route::put('/{usulan}/info', [UsulanController::class, 'updateInfo'])->name('info');
+        Route::put('/{usulan}/kak', [UsulanController::class, 'updateKak'])->name('kak');
+        Route::put('/{usulan}/rab', [UsulanRabController::class, 'update'])->name('rab');
+        Route::put('/{usulan}/iku', [UsulanIkuController::class, 'update'])->name('iku');
+        Route::post('/{usulan}/dokumen', [UsulanDokumenController::class, 'store'])->name('dokumen.store');
+        Route::delete('/{usulan}/dokumen/{dokumen}', [UsulanDokumenController::class, 'destroy'])->name('dokumen.destroy')->scopeBindings();
+        Route::post('/{usulan}/kirim', [UsulanController::class, 'kirim'])->name('kirim');
+        Route::delete('/{usulan}', [UsulanController::class, 'destroy'])->name('destroy');
+    });
+
+    // Detail usulan & unduh dokumen: Pengusul unitnya dan verifikator (dicek UsulanPolicy)
+    Route::get('/usulan/{usulan}', [UsulanController::class, 'show'])->name('usulan.show');
+    Route::get('/usulan/{usulan}/dokumen/{dokumen}', [UsulanDokumenController::class, 'download'])
+        ->name('usulan.dokumen.download')->scopeBindings();
 });
 
 require __DIR__.'/auth.php';
