@@ -106,10 +106,10 @@
           <div class="mb-4">
             <label>Status</label>
 
-            <select name="Status" class="w-full border rounded-lg px-3 py-2">
+            <select name="is_active" class="w-full border rounded-lg px-3 py-2">
 
-              <option value="1" {{ $user->Status == 1 ? 'selected' : '' }}>Aktif</option>
-              <option value="0" {{ $user->Status == 0 ? 'selected' : '' }}>Non Aktif</option>
+              <option value="1" {{ (int) $user->is_active == 1 ? 'selected' : '' }}>Aktif</option>
+              <option value="0" {{ (int) $user->is_active == 0 ? 'selected' : '' }}>Non Aktif</option>
 
             </select>
 

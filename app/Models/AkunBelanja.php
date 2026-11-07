@@ -16,6 +16,11 @@ class AkunBelanja extends Model
         'kode_akun',
         'nama_akun',
         'jenis_belanja',
-        'keterangan'
+        'keterangan',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 }

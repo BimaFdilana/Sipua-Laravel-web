@@ -10,6 +10,7 @@ class TahunController extends Controller
     public function index()
     {
         $tahuns = Tahun::all();
+
         return view('tahun.index', compact('tahuns'));
     }
 
@@ -21,7 +22,7 @@ class TahunController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tahun' => 'required|unique:tahuns'
+            'tahun' => 'required|unique:tahuns',
         ]);
         // jika status yang dipilih aktif
         if ($request->status == 1) {
@@ -30,17 +31,20 @@ class TahunController extends Controller
 
         Tahun::create([
             'tahun' => $request->tahun,
-            'status' => $request->status ?? 0
+            'status' => $request->status ?? 0,
         ]);
 
         return redirect()->route('tahun.index')
             ->with('success', 'Tahun berhasil ditambahkan');
     }
+
     public function edit($id)
     {
         $tahun = Tahun::findOrFail($id);
+
         return view('tahun.edit', compact('tahun'));
     }
+
     public function update(Request $request, $id)
     {
         $tahun = Tahun::findOrFail($id);
@@ -51,10 +55,10 @@ class TahunController extends Controller
 
         $tahun->update([
             'tahun' => $request->tahun,
-            'status' => $request->status
+            'status' => $request->status,
         ]);
 
-        return redirect()->route('tahuns.index')
+        return redirect()->route('tahun.index')
             ->with('success', 'Tahun berhasil diperbarui');
     }
 }

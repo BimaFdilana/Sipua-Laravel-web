@@ -23,7 +23,7 @@
         </div>
         @endif
 
-        <form action="{{ route('tahuns.update',$tahun->id) }}" method="POST">
+        <form action="{{ route('tahun.update',$tahun->id) }}" method="POST">
           @csrf
           @method('PUT')
 
@@ -66,7 +66,7 @@
           <!-- Tombol -->
           <div class="flex justify-end gap-2">
 
-            <a href="{{ route('tahuns.index') }}"
+            <a href="{{ route('tahun.index') }}"
               class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
               Batal
             </a>

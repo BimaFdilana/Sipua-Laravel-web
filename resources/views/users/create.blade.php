@@ -93,7 +93,7 @@
           <div class="mb-4">
             <label>Status</label>
 
-            <select name="status" class="w-full border rounded-lg px-3 py-2">
+            <select name="is_active" class="w-full border rounded-lg px-3 py-2">
 
               <option value="1">Aktif</option>
               <option value="0">Non Aktif</option>

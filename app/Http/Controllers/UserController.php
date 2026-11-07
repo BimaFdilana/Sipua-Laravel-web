@@ -2,23 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Unit;
 use App\Models\User;
-use App\Models\unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-
     public function index()
     {
-        $users = User::with('units')->get();
+        $users = User::with('unit')->get();
+
         return view('users.index', compact('users'));
     }
 
     public function create()
     {
-        $units = unit::all();
+        $units = Unit::all();
+
         return view('users.create', compact('units'));
     }
 
@@ -29,7 +30,12 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
-            'unit_id' => $request->unit_id
+            'unit_id' => $request->unit_id,
+            'nama_lengkap' => $request->nama_lengkap,
+            'nip' => $request->nip,
+            'jabatan' => $request->jabatan,
+            'no_hp' => $request->no_hp,
+            'is_active' => $request->boolean('is_active', true),
         ]);
 
         return redirect('users')->with('success', 'User berhasil dibuat');
@@ -38,7 +44,7 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        $units = unit::all();
+        $units = Unit::all();
 
         return view('users.edit', compact('user', 'units'));
     }
@@ -56,12 +62,11 @@ class UserController extends Controller
             'nip' => $request->nip,
             'jabatan' => $request->jabatan,
             'no_hp' => $request->no_hp,
-            'Status' => $request->Status
+            'is_active' => $request->boolean('is_active'),
         ]);
 
         return redirect('users')->with('success', 'User berhasil diupdate');
     }
-
 
     public function destroy($id)
     {

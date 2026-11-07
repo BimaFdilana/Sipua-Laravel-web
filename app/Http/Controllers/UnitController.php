@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Unit;
+use Illuminate\Http\Request;
 
 class UnitController extends Controller
 {
-
     // Menampilkan semua data unit
     public function index()
     {
-        $units = unit::orderBy('created_at', 'DESC')->get();
+        $units = Unit::orderBy('created_at', 'DESC')->get();
 
         return view('unit.index', compact('units'));
     }
@@ -28,13 +27,13 @@ class UnitController extends Controller
         $request->validate([
             'unit_id' => 'required|unique:units',
             'nama_unit' => 'required|string|max:255',
-            'keterangan' => 'nullable|string'
+            'keterangan' => 'nullable|string',
         ]);
 
         Unit::create([
             'unit_id' => $request->unit_id,
             'nama_unit' => $request->nama_unit,
-            'keterangan' => $request->keterangan
+            'keterangan' => $request->keterangan,
         ]);
 
         return redirect()->route('unit.index')
@@ -44,7 +43,7 @@ class UnitController extends Controller
     // Form edit unit
     public function edit($id)
     {
-        $unit = unit::findOrFail($id);
+        $unit = Unit::findOrFail($id);
 
         return view('unit.edit', compact('unit'));
     }
@@ -52,18 +51,18 @@ class UnitController extends Controller
     // Update data unit
     public function update(Request $request, $id)
     {
-        $unit = unit::findOrFail($id);
+        $unit = Unit::findOrFail($id);
 
         $request->validate([
-            'unit_id' => 'required|unique:units,unit_id,' . $unit->id,
+            'unit_id' => 'required|unique:units,unit_id,'.$unit->id,
             'nama_unit' => 'required|string|max:255',
-            'keterangan' => 'nullable|string'
+            'keterangan' => 'nullable|string',
         ]);
 
         $unit->update([
             'unit_id' => $request->unit_id,
             'nama_unit' => $request->nama_unit,
-            'keterangan' => $request->keterangan
+            'keterangan' => $request->keterangan,
         ]);
 
         return redirect()->route('unit.index')
@@ -73,7 +72,7 @@ class UnitController extends Controller
     // Hapus unit
     public function destroy($id)
     {
-        $unit = unit::findOrFail($id);
+        $unit = Unit::findOrFail($id);
 
         $unit->delete();
 

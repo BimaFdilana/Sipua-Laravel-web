@@ -18,7 +18,7 @@
             <p class="text-sm text-gray-500">Kelola tahun anggaran yang digunakan dalam sistem SIPUA</p>
           </div>
 
-          <a href="{{ route('tahuns.create') }}"
+          <a href="{{ route('tahun.create') }}"
             class="bg-blue-600 hover:bg-blue-700 text-black px-4 py-2 rounded-lg shadow flex items-center gap-2">
             ➕ Tambah Tahun
           </a>
@@ -87,12 +87,12 @@
 
                     <div class="flex justify-center gap-2">
 
-                      <a href="{{ route('tahuns.edit',$tahun->id) }}"
+                      <a href="{{ route('tahun.edit',$tahun->id) }}"
                         class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm">
                         ✏️
                       </a>
 
-                      <form action="{{ route('tahuns.destroy',$tahun->id) }}" method="POST">
+                      <form action="{{ route('tahun.destroy',$tahun->id) }}" method="POST">
 
                         @csrf
                         @method('DELETE')
