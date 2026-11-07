@@ -12,6 +12,9 @@
                 <span class="font-mono">{{ $usulan->nomor }}</span> · {{ $usulan->unit->nama_unit }} · TA {{ $usulan->tahun->tahun }}
             </x-slot>
             <x-slot name="actions">
+                @if ($usulan->status === \App\Enums\StatusUsulan::Disahkan)
+                    <x-ui.button variant="secondary" :href="route('usulan.rkakl', $usulan)">Cetak RKAKL (PDF)</x-ui.button>
+                @endif
                 @can('update', $usulan)
                     <x-ui.button :href="route('usulan.edit', $usulan)">
                         {{ $usulan->status === \App\Enums\StatusUsulan::PerluPerbaikan ? 'Perbaiki usulan' : 'Ubah usulan' }}

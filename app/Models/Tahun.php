@@ -15,11 +15,13 @@ class Tahun extends Model
     protected $fillable = [
         'tahun',
         'status',
+        'pagu',
     ];
 
     protected $casts = [
         'tahun' => 'integer',
         'status' => 'boolean',
+        'pagu' => 'decimal:2',
     ];
 
     public static function aktif(): ?self

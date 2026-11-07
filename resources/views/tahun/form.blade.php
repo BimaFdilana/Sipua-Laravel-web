@@ -16,6 +16,11 @@
                     <x-ui.field label="Tahun anggaran" name="tahun" required class="max-w-[10rem]">
                         <x-ui.input type="number" name="tahun" :value="$tahun->tahun" min="2000" max="2100" class="tabular-nums" autofocus />
                     </x-ui.field>
+                    <x-ui.field label="Pagu anggaran institusi (Rp)" name="pagu" hint="Opsional. Dipakai di grafik pagu vs usulan pada dashboard.">
+                        <x-ui.input name="pagu" :value="$tahun->pagu ? number_format((float) $tahun->pagu, 0, ',', '.') : null" inputmode="numeric" class="tabular-nums"
+                            placeholder="mis. 25.000.000.000"
+                            x-data x-on:input="const d = $el.value.replace(/[^0-9]/g, ''); $el.value = d ? Number(d).toLocaleString('id-ID') : ''" />
+                    </x-ui.field>
                     <x-ui.toggle name="status" :checked="$tahun->status" label="Jadikan tahun aktif"
                         description="Tahun yang sedang aktif akan otomatis dinonaktifkan." />
                 </div>

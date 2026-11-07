@@ -13,6 +13,7 @@
         <x-ui.table empty="Belum ada tahun anggaran.">
             <x-slot name="head">
                 <th class="px-4 py-3">Tahun</th>
+                <th class="px-4 py-3 text-right">Pagu</th>
                 <th class="px-4 py-3">Status</th>
                 <th class="px-4 py-3"><span class="sr-only">Aksi</span></th>
             </x-slot>
@@ -20,6 +21,7 @@
             @foreach ($tahuns as $t)
                 <tr @class(['bg-blue-50/40' => $t->status, 'hover:bg-slate-50' => ! $t->status])>
                     <td class="px-4 py-3 text-base font-semibold tabular-nums text-slate-900">{{ $t->tahun }}</td>
+                    <td class="px-4 py-3 text-right tabular-nums text-slate-600">{{ $t->pagu ? \App\Support\Format::rupiah($t->pagu) : '—' }}</td>
                     <td class="px-4 py-3">
                         @if ($t->status)
                             <x-ui.badge color="green"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Aktif</x-ui.badge>

@@ -39,7 +39,8 @@ class MasterDataSeeder extends Seeder
             Unit::updateOrCreate(['unit_id' => $kode], ['nama_unit' => $nama, 'jenis' => $jenis]);
         }
 
-        Tahun::updateOrCreate(['tahun' => 2026], ['status' => true]);
+        Tahun::updateOrCreate(['tahun' => 2025], ['status' => false, 'pagu' => 2_100_000_000]);
+        Tahun::updateOrCreate(['tahun' => 2026], ['status' => true, 'pagu' => 2_500_000_000]);
         Tahun::updateOrCreate(['tahun' => 2027], ['status' => false]);
 
         $akun = [

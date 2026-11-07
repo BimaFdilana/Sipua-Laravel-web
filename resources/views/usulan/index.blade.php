@@ -19,6 +19,7 @@
     <div class="mx-auto max-w-7xl space-y-5 px-4 py-6 sm:px-6 lg:px-8">
         <x-ui.page-header title="Usulan Saya" :description="'Usulan anggaran '.($unit?->nama_unit ?? 'unit kerja Anda').'.'">
             <x-slot name="actions">
+                <x-ui.button variant="secondary" :href="route('usulan.rkt', ['tahun' => $tahunId])" title="Rencana Kerja Tahunan dari usulan yang disahkan">Cetak RKT (PDF)</x-ui.button>
                 <x-ui.button :href="route('usulan.create')">+ Buat usulan</x-ui.button>
             </x-slot>
         </x-ui.page-header>

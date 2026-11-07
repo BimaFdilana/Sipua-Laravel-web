@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\AkunBelanjaController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DokumenCetakController;
 use App\Http\Controllers\IkuController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TahunController;
 use App\Http\Controllers\UnitController;
@@ -37,6 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:pengusul')->prefix('usulan')->name('usulan.')->group(function () {
         Route::get('/', [UsulanController::class, 'index'])->name('index');
         Route::get('/buat', [UsulanController::class, 'create'])->name('create');
+        Route::get('/rkt', [DokumenCetakController::class, 'rkt'])->name('rkt');
         Route::post('/', [UsulanController::class, 'store'])->name('store');
         Route::get('/{usulan}/ubah/{step?}', [UsulanController::class, 'edit'])->name('edit');
         Route::put('/{usulan}/info', [UsulanController::class, 'updateInfo'])->name('info');
@@ -56,8 +59,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/usulan/{usulan}/prioritas', [VerifikasiController::class, 'prioritas'])->name('verifikasi.prioritas');
     });
 
+    // Laporan (Sprint 4). Hak akses per jenis laporan dicek di LaporanController.
+    Route::middleware('role:perencanaan,wadir,direktur')->group(function () {
+        Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+        Route::get('/laporan/{jenis}', [LaporanController::class, 'show'])->name('laporan.show');
+    });
+
     // Detail usulan & unduh dokumen: Pengusul unitnya dan verifikator (dicek UsulanPolicy)
     Route::get('/usulan/{usulan}', [UsulanController::class, 'show'])->name('usulan.show');
+    Route::get('/usulan/{usulan}/rkakl', [DokumenCetakController::class, 'rkakl'])->name('usulan.rkakl');
     Route::get('/usulan/{usulan}/dokumen/{dokumen}', [UsulanDokumenController::class, 'download'])
         ->name('usulan.dokumen.download')->scopeBindings();
 });
