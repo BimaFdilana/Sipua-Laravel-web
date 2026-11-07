@@ -4,7 +4,7 @@
     Tabel standar. Isi slot "head" dengan <th>, slot utama dengan <tr>.
     Jika slot utama kosong, tampilkan pesan $empty.
 --}}
-<div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+<div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white">
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-slate-200 text-sm">
             <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">

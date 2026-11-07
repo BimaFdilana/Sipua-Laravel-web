@@ -55,7 +55,7 @@
         </section>
 
         <div class="grid gap-6 lg:grid-cols-3">
-            <div class="space-y-6 lg:col-span-2">
+            <div class="min-w-0 space-y-6 lg:col-span-2">
                 {{-- Sebaran status --}}
                 <x-ui.card title="Sebaran status" :description="number_format($total['jumlah'], 0, ',', '.').' usulan · '.Format::rupiah($total['nilai'])">
                     @if ($statusTampil->isEmpty())
@@ -117,7 +117,7 @@
                 @endif
             </div>
 
-            <div class="space-y-6">
+            <div class="min-w-0 space-y-6">
                 {{-- Daftar menunggu tindakan --}}
                 <x-ui.card :title="$isPengusul ? 'Perlu Anda lengkapi' : 'Menunggu Anda'" :padding="false">
                     <ul class="divide-y divide-slate-100">

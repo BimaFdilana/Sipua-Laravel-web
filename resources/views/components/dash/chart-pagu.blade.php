@@ -43,7 +43,8 @@
             <canvas x-ref="canvas" role="img" aria-label="Grafik pagu dan nilai usulan per tahun"></canvas>
         </div>
         {{-- Alternatif teks untuk pembaca layar & cetak --}}
-        <table class="sr-only">
+        <div class="sr-only">
+        <table>
             <caption>Pagu dan usulan per tahun</caption>
             <tr><th>Tahun</th><th>Pagu</th><th>{{ $judulUsulan }}</th><th>Disahkan</th></tr>
             @foreach ($tren as $r)
@@ -55,5 +56,6 @@
                 </tr>
             @endforeach
         </table>
+        </div>
     @endif
 </x-ui.card>

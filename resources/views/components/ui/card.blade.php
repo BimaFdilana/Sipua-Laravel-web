@@ -1,6 +1,6 @@
 @props(['title' => null, 'description' => null, 'padding' => true])
 
-<section {{ $attributes->merge(['class' => 'rounded-xl border border-slate-200 bg-white']) }}>
+<section {{ $attributes->merge(['class' => 'relative rounded-xl border border-slate-200 bg-white']) }}>
     @if ($title)
         <header class="border-b border-slate-200 px-5 py-4">
             <h2 class="text-sm font-semibold text-slate-900">{{ $title }}</h2>

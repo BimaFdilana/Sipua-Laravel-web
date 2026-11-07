@@ -48,7 +48,7 @@
         </section>
 
         <div class="grid gap-6 lg:grid-cols-3">
-            <div class="space-y-6 lg:col-span-2">
+            <div class="min-w-0 space-y-6 lg:col-span-2">
                 {{-- Informasi kegiatan --}}
                 <x-ui.card title="Informasi kegiatan">
                     <dl class="grid gap-x-6 gap-y-4 text-sm sm:grid-cols-2">
@@ -119,7 +119,7 @@
                 </x-ui.card>
             </div>
 
-            <div class="space-y-6">
+            <div class="min-w-0 space-y-6">
                 <x-usulan.panel-verifikasi :usulan="$usulan" />
 
                 {{-- IKU --}}
