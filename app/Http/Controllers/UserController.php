@@ -2,76 +2,73 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
 use App\Models\Unit;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request): View
     {
-        $users = User::with('unit')->get();
+        $users = User::query()
+            ->with('unit')
+            ->when($request->q, fn ($q, $s) => $q->where(fn ($w) => $w
+                ->where('name', 'like', "%{$s}%")
+                ->orWhere('email', 'like', "%{$s}%")
+                ->orWhere('nip', 'like', "%{$s}%")))
+            ->when($request->role, fn ($q, $r) => $q->where('role', $r))
+            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'aktif'))
+            ->orderBy('name')
+            ->paginate(15)->withQueryString();
 
         return view('users.index', compact('users'));
     }
 
-    public function create()
+    public function create(): View
     {
-        $units = Unit::all();
-
-        return view('users.create', compact('units'));
-    }
-
-    public function store(Request $request)
-    {
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
-            'unit_id' => $request->unit_id,
-            'nama_lengkap' => $request->nama_lengkap,
-            'nip' => $request->nip,
-            'jabatan' => $request->jabatan,
-            'no_hp' => $request->no_hp,
-            'is_active' => $request->boolean('is_active', true),
+        return view('users.form', [
+            'user' => new User(['role' => User::ROLE_PENGUSUL, 'is_active' => true]),
+            'units' => Unit::options(),
         ]);
-
-        return redirect('users')->with('success', 'User berhasil dibuat');
     }
 
-    public function edit($id)
+    public function store(UserRequest $request): RedirectResponse
     {
-        $user = User::findOrFail($id);
-        $units = Unit::all();
+        $user = User::create($request->payload() + ['email_verified_at' => now()]);
 
-        return view('users.edit', compact('user', 'units'));
+        return redirect()->route('users.index')->with('success', "Pengguna {$user->name} berhasil ditambahkan.");
     }
 
-    public function update(Request $request, $id)
+    public function edit(User $user): View
     {
-        $user = User::findOrFail($id);
+        // Unit yang sedang dipakai tetap tampil walau sudah nonaktif.
+        $units = Unit::options();
+        if ($user->unit && ! isset($units[$user->unit_id])) {
+            $units[$user->unit_id] = "{$user->unit->unit_id} — {$user->unit->nama_unit} (nonaktif)";
+        }
 
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'role' => $request->role,
-            'unit_id' => $request->unit_id,
-            'nama_lengkap' => $request->nama_lengkap,
-            'nip' => $request->nip,
-            'jabatan' => $request->jabatan,
-            'no_hp' => $request->no_hp,
-            'is_active' => $request->boolean('is_active'),
-        ]);
-
-        return redirect('users')->with('success', 'User berhasil diupdate');
+        return view('users.form', compact('user', 'units'));
     }
 
-    public function destroy($id)
+    public function update(UserRequest $request, User $user): RedirectResponse
     {
-        User::destroy($id);
+        $user->update($request->payload());
 
-        return redirect('users')->with('success', 'User berhasil dihapus');
+        return redirect()->route('users.index')->with('success', "Pengguna {$user->name} berhasil diperbarui.");
+    }
+
+    public function destroy(Request $request, User $user): RedirectResponse
+    {
+        if ($user->is($request->user())) {
+            return back()->with('error', 'Anda tidak bisa menghapus akun Anda sendiri.');
+        }
+
+        // Sprint 2: pengguna yang sudah membuat usulan sebaiknya dinonaktifkan, bukan dihapus.
+        $user->delete();
+
+        return redirect()->route('users.index')->with('success', "Pengguna {$user->name} berhasil dihapus.");
     }
 }

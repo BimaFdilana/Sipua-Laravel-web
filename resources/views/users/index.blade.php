@@ -1,138 +1,58 @@
 <x-app-layout>
-  <x-slot name="header">
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-      Kelola User
-    </h2>
-  </x-slot>
+    <x-slot name="title">Pengguna</x-slot>
+    <x-slot name="header"><span class="text-sm text-slate-500">Master Data</span></x-slot>
 
-  <div class="py-6">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    @php
+        $roleColor = ['admin' => 'violet', 'pengusul' => 'blue', 'perencanaan' => 'amber', 'wadir' => 'slate', 'spi' => 'slate', 'direktur' => 'slate'];
+    @endphp
 
-      <div class="bg-white shadow-md rounded-lg p-6">
+    <div class="mx-auto max-w-7xl space-y-5 px-4 py-6 sm:px-6 lg:px-8">
+        <x-ui.page-header title="Pengguna" description="Akun yang bisa masuk ke SIPUA beserta peran dan unit kerjanya.">
+            <x-slot name="actions">
+                <x-ui.button :href="route('users.create')">+ Tambah pengguna</x-ui.button>
+            </x-slot>
+        </x-ui.page-header>
 
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-semibold text-gray-700">
-            Manajemen Pengguna
-            <p class="text-sm text-gray-500">Kelola semua pengguna sistem SIPUA</p>
-          </h2>
+        <x-ui.search placeholder="Cari nama, email, atau NIP…">
+            <x-ui.select name="role" :options="\App\Models\User::ROLES" :value="request('role')" placeholder="Semua peran" class="sm:w-44" />
+            <x-ui.select name="status" :options="['aktif' => 'Aktif', 'nonaktif' => 'Nonaktif']" :value="request('status')" placeholder="Semua status" class="sm:w-40" />
+        </x-ui.search>
 
-          <a href="{{ route('users.create') }}"
-            class="bg-blue-600 hover:bg-blue-700 text-black px-4 py-2 rounded-lg shadow flex items-center gap-2">
-            ➕ Tambah User
-          </a>
-        </div>
+        <x-ui.table :paginator="$users" empty="Tidak ada pengguna yang cocok.">
+            <x-slot name="head">
+                <th class="px-4 py-3">Nama</th>
+                <th class="px-4 py-3">Peran</th>
+                <th class="px-4 py-3">Unit kerja</th>
+                <th class="px-4 py-3">Status</th>
+                <th class="px-4 py-3"><span class="sr-only">Aksi</span></th>
+            </x-slot>
 
-        <!-- Search -->
-        <div class="mb-4">
-          <input type="text" id="searchUser"
-            placeholder="Cari user..."
-            class="border rounded-lg px-4 py-2 w-full">
-        </div>
-        <div class="overflow-x-auto">
-          <table class="min-w-full table-auto border border-gray-200 rounded-lg">
-            <table id="userTable" class="min-w-full border border-gray-200 rounded-lg overflow-hidden">
-              <thead class="bg-gray-800 text-white">
-                <tr class="text-center">
-                  <th class="px-3 py-2 w-12">No</th>
-                  <th class="px-4 py-2">Nama</th>
-                  <th class="px-6 py-2">Email</th>
-                  <!--   <th class="px-6 py-2">Nama Lengkap</th> -->
-                  <!--   <th class="px-4 py-2">NIP</th> -->
-                  <th class="px-4 py-2">Jabatan</th>
-                  <th class="px-4 py-2">No_hp</th>
-                  <th class="px-3 py-2">Role</th>
-                  <!-- <th class="px-4 py-2">Unit</th> -->
-                  <th class="px-3 py-2">Terakhir Login</th>
-                  <th class="px-3 py-2">Status</th>
-                  <th class="px-4 py-2 w-28">Aksi</th>
+            @foreach ($users as $u)
+                <tr class="hover:bg-slate-50">
+                    <td class="px-4 py-3">
+                        <p class="font-medium text-slate-900">
+                            {{ $u->name }}
+                            @if ($u->is(auth()->user()))
+                                <span class="ml-1 text-xs font-normal text-slate-400">(Anda)</span>
+                            @endif
+                        </p>
+                        <p class="text-xs text-slate-500">{{ $u->email }}@if ($u->nip) · NIP {{ $u->nip }}@endif</p>
+                    </td>
+                    <td class="px-4 py-3">
+                        <x-ui.badge :color="$roleColor[$u->role] ?? 'slate'">{{ $u->roleLabel() }}</x-ui.badge>
+                    </td>
+                    <td class="px-4 py-3 text-slate-600">{{ $u->unit?->nama_unit ?? '—' }}</td>
+                    <td class="px-4 py-3">
+                        <x-ui.badge :color="$u->is_active ? 'green' : 'red'">{{ $u->is_active ? 'Aktif' : 'Nonaktif' }}</x-ui.badge>
+                    </td>
+                    <td class="whitespace-nowrap px-4 py-3 text-right">
+                        <x-ui.edit-link :href="route('users.edit', $u)" :item="$u->name" />
+                        @unless ($u->is(auth()->user()))
+                            <x-ui.delete-button :action="route('users.destroy', $u)" :item="$u->name" />
+                        @endunless
+                    </td>
                 </tr>
-              </thead>
-              <tbody>
-
-                @foreach($users as $user)
-
-                <tr class="border-b hover:bg-gray-50 text-center">
-
-                  <td class="px-3 py-2">{{ $loop->iteration }}</td>
-                  <td class="px-4 py-2">{{ $user->name }}</td>
-                  <td class="px-6 py-2">{{ $user->email }}</td>
-                  <!--   <td class="px-6 py-2">{{ $user->nama_lengkap ?? '-' }}</td> -->
-                  <!-- <td class="px-4 py-2">{{ $user->nip ?? '-' }}</td> -->
-                  <td class="px-4 py-2">{{ $user->jabatan ?? '-' }}</td>
-                  <td class="px-4 py-2">{{ $user->no_hp ?? '-' }}</td>
-                  <td class="px-3 py-2">
-                    <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm">
-                      {{ $user->role }}
-                    </span>
-                  </td>
-                  <!-- <td class="px-4 py-2">{{ $user->unit_id ?? '-' }}</td>-->
-                  <td class="px-4 py-2">{{ $user->updated_at}}</td>
-                  <td class="px-3 py-2">
-
-                    @if((int) $user->is_active == 1)
-
-                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">
-                      Aktif
-                    </span>
-
-                    @else
-
-                    <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-sm">
-                      Non Aktif
-                    </span>
-
-                    @endif
-                  </td>
-                  <td class="px-4 py-2">
-                    <div class="flex justify-center gap-2">
-
-                      <a href="{{ route('users.edit', $user->id) }}"
-                        class="bg-yellow-400 hover:bg-yellow-500 text-white px-2 py-1 rounded">
-                        ✏️
-                      </a>
-
-                      <form action="{{ route('users.destroy', $user->id) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-
-                        <button
-                          class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
-                          onclick="return confirm('Yakin hapus user ini?')">
-                          🗑️
-                        </button>
-
-                      </form>
-
-                    </div>
-                  </td>
-                </tr>
-                @endforeach
-              </tbody>
-            </table>
-          </table>
-        </div>
-      </div>
+            @endforeach
+        </x-ui.table>
     </div>
-  </div>
 </x-app-layout>
-<script>
-  document.getElementById("searchUser").addEventListener("keyup", function() {
-
-    let filter = this.value.toLowerCase();
-    let rows = document.querySelectorAll("#userTable tbody tr");
-
-    rows.forEach(function(row) {
-
-      let text = row.textContent.toLowerCase();
-
-      if (text.includes(filter)) {
-        row.style.display = "";
-      } else {
-        row.style.display = "none";
-      }
-
-    });
-
-  });
-</script>
