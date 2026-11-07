@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Iku;
 use App\Models\Tahun;
 use App\Models\Unit;
 use App\Models\User;
@@ -111,7 +112,7 @@ test('US-34 laporan prioritas dikelompokkan dengan subtotal, untuk Perencanaan, 
 });
 
 test('US-35 laporan IKU menampilkan usulan per IKU dan IKU yang belum punya usulan', function () {
-    \App\Models\Iku::create(['kode_iku' => 'IKU9', 'nama_iku' => 'IKU tanpa usulan', 'sifat' => 'Pilihan', 'tahun' => 2026]);
+    Iku::create(['kode_iku' => 'IKU9', 'nama_iku' => 'IKU tanpa usulan', 'sifat' => 'Pilihan', 'tahun' => 2026]);
 
     $res = $this->actingAs(($this->u)('perencanaan'))->get('/laporan/iku')->assertOk()
         ->assertSee('IKU1')->assertSee('IKU tanpa usulan')->assertSee('Belum ada usulan terkait');

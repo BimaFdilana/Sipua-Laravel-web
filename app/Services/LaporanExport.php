@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Support\Format;
+use OpenSpout\Common\Entity\Cell;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Common\Entity\Style\Style;
 use OpenSpout\Writer\XLSX\Writer;
@@ -29,7 +30,7 @@ class LaporanExport
             $writer->addRow(Row::fromValues([]));
 
             $tambah = function (array $nilai, ?Style $style = null) use ($writer, $uang) {
-                $cells = array_map(fn ($v) => \OpenSpout\Common\Entity\Cell::fromValue($v, is_float($v) ? $uang : null), $nilai);
+                $cells = array_map(fn ($v) => Cell::fromValue($v, is_float($v) ? $uang : null), $nilai);
                 $writer->addRow(new Row($cells, $style));
             };
 

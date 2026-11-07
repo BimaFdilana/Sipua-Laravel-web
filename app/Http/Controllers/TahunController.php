@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TahunRequest;
 use App\Models\Tahun;
+use App\Models\Usulan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -53,7 +54,7 @@ class TahunController extends Controller
             return back()->with('error', "Tahun {$tahun->tahun} sedang aktif. Aktifkan tahun lain dulu sebelum menghapus.");
         }
 
-        if (\App\Models\Usulan::withTrashed()->where('tahun_id', $tahun->id)->exists()) {
+        if (Usulan::withTrashed()->where('tahun_id', $tahun->id)->exists()) {
             return back()->with('error', "Tahun {$tahun->tahun} sudah memiliki usulan dan tidak bisa dihapus.");
         }
 

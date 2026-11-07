@@ -7,6 +7,7 @@ use App\Models\Iku;
 use App\Models\Tahun;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class IkuController extends Controller
@@ -57,7 +58,7 @@ class IkuController extends Controller
 
     public function destroy(Iku $iku): RedirectResponse
     {
-        if (\Illuminate\Support\Facades\DB::table('iku_usulan')->where('iku_id', $iku->id)->exists()) {
+        if (DB::table('iku_usulan')->where('iku_id', $iku->id)->exists()) {
             return back()->with('error', "{$iku->kode_iku} sudah dipilih di usulan dan tidak bisa dihapus.");
         }
 

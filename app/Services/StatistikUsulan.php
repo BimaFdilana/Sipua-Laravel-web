@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\StatusUsulan as S;
+use App\Models\Iku;
 use App\Models\Tahun;
 use App\Models\Unit;
 use App\Models\User;
@@ -132,7 +133,7 @@ class StatistikUsulan
         $relasi = DB::table('iku_usulan')->whereIn('usulan_id', $ids)->get()->groupBy('iku_id');
         $usulans = Usulan::with('unit')->whereIn('id', $ids)->get()->keyBy('id');
 
-        return \App\Models\Iku::forTahun($tahun)->orderBy('kode_iku')->get()->map(function ($iku) use ($relasi, $usulans) {
+        return Iku::forTahun($tahun)->orderBy('kode_iku')->get()->map(function ($iku) use ($relasi, $usulans) {
             $terkait = collect($relasi[$iku->id] ?? [])->map(fn ($r) => $usulans[$r->usulan_id])->sortByDesc('total_rab')->values();
 
             return [

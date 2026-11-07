@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserRequest;
 use App\Models\Unit;
 use App\Models\User;
+use App\Models\Usulan;
+use App\Models\UsulanLog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -66,8 +68,8 @@ class UserController extends Controller
             return back()->with('error', 'Anda tidak bisa menghapus akun Anda sendiri.');
         }
 
-        if (\App\Models\Usulan::withTrashed()->where('user_id', $user->id)->exists()
-            || \App\Models\UsulanLog::where('user_id', $user->id)->exists()) {
+        if (Usulan::withTrashed()->where('user_id', $user->id)->exists()
+            || UsulanLog::where('user_id', $user->id)->exists()) {
             return back()->with('error', "{$user->name} sudah tercatat di usulan. Nonaktifkan akunnya, jangan dihapus.");
         }
 

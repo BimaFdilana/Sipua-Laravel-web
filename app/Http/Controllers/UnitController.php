@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UnitRequest;
 use App\Models\Unit;
+use App\Models\Usulan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -51,7 +52,7 @@ class UnitController extends Controller
 
     public function destroy(Unit $unit): RedirectResponse
     {
-        if (\App\Models\Usulan::withTrashed()->where('unit_id', $unit->id)->exists()) {
+        if (Usulan::withTrashed()->where('unit_id', $unit->id)->exists()) {
             return back()->with('error', "Unit {$unit->nama_unit} sudah memiliki usulan. Nonaktifkan unit ini, jangan dihapus.");
         }
 

@@ -63,7 +63,7 @@ class VerifikasiController extends Controller
     {
         Gate::authorize('verify', $usulan);
 
-        $aksiValid = array_keys(\App\Services\UsulanWorkflow::TRANSISI[$usulan->status->value] ?? []);
+        $aksiValid = array_keys(UsulanWorkflow::TRANSISI[$usulan->status->value] ?? []);
 
         $data = $request->validate([
             'keputusan' => ['required', Rule::in($aksiValid)],

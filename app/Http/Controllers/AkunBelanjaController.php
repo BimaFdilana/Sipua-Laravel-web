@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AkunBelanjaRequest;
 use App\Models\AkunBelanja;
+use App\Models\RabItem;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -50,7 +51,7 @@ class AkunBelanjaController extends Controller
 
     public function destroy(AkunBelanja $akunBelanja): RedirectResponse
     {
-        if (\App\Models\RabItem::where('kode_akun', $akunBelanja->kode_akun)->exists()) {
+        if (RabItem::where('kode_akun', $akunBelanja->kode_akun)->exists()) {
             return back()->with('error', "Akun {$akunBelanja->kode_akun} sudah dipakai di RAB usulan. Nonaktifkan akun ini, jangan dihapus.");
         }
 
