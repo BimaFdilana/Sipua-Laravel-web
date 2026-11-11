@@ -52,8 +52,8 @@
                         <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                             <tr>
                                 <th class="w-8 px-3 py-2.5">#</th>
-                                <th class="min-w-[18rem] px-2 py-2.5">Akun belanja</th>
-                                <th class="min-w-[26rem] px-2 py-2.5">Uraian</th>
+                                <th class="min-w-[13rem] px-2 py-2.5">Akun belanja</th>
+                                <th class="min-w-[36rem] px-2 py-2.5">Uraian</th>
                                 <th class="w-28 px-2 py-2.5">Volume</th>
                                 <th class="w-32 px-2 py-2.5">Satuan</th>
                                 <th class="w-48 min-w-[11rem] px-2 py-2.5">Harga satuan (Rp)</th>
