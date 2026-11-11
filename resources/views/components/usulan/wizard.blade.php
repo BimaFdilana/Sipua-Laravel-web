@@ -9,7 +9,7 @@
     <x-slot name="title">{{ $usulan->exists ? $usulan->nomor : 'Usulan baru' }}</x-slot>
     <x-slot name="header"><span class="text-sm text-slate-500">Usulan Saya</span></x-slot>
 
-    <div class="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-none space-y-6 px-4 py-6 sm:px-6 lg:px-8">
         <x-ui.page-header :title="$usulan->exists ? ($usulan->judul_kegiatan ?: 'Tanpa judul') : 'Usulan anggaran baru'" :back="route('usulan.index')">
             <x-slot name="description">
                 @if ($usulan->exists)
