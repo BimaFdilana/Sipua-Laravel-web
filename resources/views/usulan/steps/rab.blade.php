@@ -52,12 +52,12 @@
                         <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                             <tr>
                                 <th class="w-8 px-3 py-2.5">#</th>
-                                <th class="min-w-[14rem] px-2 py-2.5">Akun belanja</th>
-                                <th class="min-w-[16rem] px-2 py-2.5">Uraian</th>
-                                <th class="w-24 px-2 py-2.5">Volume</th>
-                                <th class="w-28 px-2 py-2.5">Satuan</th>
-                                <th class="w-40 px-2 py-2.5">Harga satuan (Rp)</th>
-                                <th class="w-40 px-2 py-2.5 text-right">Jumlah</th>
+                                <th class="min-w-[18rem] px-2 py-2.5">Akun belanja</th>
+                                <th class="min-w-[26rem] px-2 py-2.5">Uraian</th>
+                                <th class="w-28 px-2 py-2.5">Volume</th>
+                                <th class="w-32 px-2 py-2.5">Satuan</th>
+                                <th class="w-48 min-w-[11rem] px-2 py-2.5">Harga satuan (Rp)</th>
+                                <th class="w-48 min-w-[11rem] whitespace-nowrap px-2 py-2.5 text-right">Jumlah</th>
                                 <th class="w-10 px-2 py-2.5"><span class="sr-only">Hapus</span></th>
                             </tr>
                         </thead>
@@ -93,7 +93,7 @@
                                             aria-label="Harga satuan"
                                             class="block w-full rounded-md border-0 px-2 py-1.5 text-right text-sm tabular-nums ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-blue-600">
                                     </td>
-                                    <td class="px-2 py-2.5 text-right font-medium tabular-nums text-slate-900" x-text="rupiah(jumlah(row))"></td>
+                                    <td class="whitespace-nowrap px-2 py-2.5 text-right font-medium tabular-nums text-slate-900" x-text="rupiah(jumlah(row))"></td>
                                     <td class="px-2 py-2">
                                         <button type="button" @click="hapus(i)" title="Hapus baris"
                                             class="rounded-md p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600">
